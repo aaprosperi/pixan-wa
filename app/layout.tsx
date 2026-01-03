@@ -4,6 +4,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'pixan WA - Admin Dashboard',
   description: 'Portal de administración para pixan WA',
+  icons: {
+    icon: '/WA/favicon.ico',
+  },
 }
 
 export default function RootLayout({
