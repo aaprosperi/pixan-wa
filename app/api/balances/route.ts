@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { Redis } from '@upstash/redis';
 
 export async function GET() {
   try {
@@ -6,6 +7,7 @@ export async function GET() {
       aiGateway: await checkAIGatewayBalance(),
       twilio: await checkTwilioBalance(),
       gemini: await checkGeminiQuota(),
+      upstash: await checkUpstashUsage(),
     };
 
     return NextResponse.json(balances);
@@ -90,6 +92,37 @@ async function checkGeminiQuota() {
       status: 'error',
       quotaUsed: 0,
       quotaLimit: 1500,
+    };
+  }
+}
+
+async function checkUpstashUsage() {
+  try {
+    const redis = Redis.fromEnv();
+    
+    // Obtener el contador de comandos diarios
+    const today = new Date().toISOString().split('T')[0];
+    const usageKey = `upstash:usage:${today}`;
+    const commandsUsed = await redis.get(usageKey) || 0;
+    
+    // Límite gratuito de Upstash: 10,000 comandos/día
+    const dailyLimit = 10000;
+    const usage = Number(commandsUsed);
+    const percentUsed = (usage / dailyLimit) * 100;
+    
+    return {
+      status: percentUsed < 70 ? 'ok' : percentUsed < 90 ? 'warning' : 'error',
+      commandsUsed: usage,
+      dailyLimit: dailyLimit,
+      percentUsed: Math.round(percentUsed),
+    };
+  } catch (error) {
+    console.error('Upstash usage error:', error);
+    return {
+      status: 'error',
+      commandsUsed: 0,
+      dailyLimit: 10000,
+      percentUsed: 0,
     };
   }
 }
