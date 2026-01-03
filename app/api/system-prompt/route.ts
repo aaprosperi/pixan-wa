@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 export async function GET() {
   try {
-    const prompt = await kv.get('system_prompt') || '';
+    const redis = Redis.fromEnv();
+    const prompt = await redis.get('system_prompt') || '';
     return NextResponse.json({ prompt });
   } catch (error) {
     console.error('Error fetching system prompt:', error);
@@ -16,6 +17,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const redis = Redis.fromEnv();
     const { prompt } = await request.json();
 
     if (typeof prompt !== 'string') {
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await kv.set('system_prompt', prompt);
+    await redis.set('system_prompt', prompt);
     
     return NextResponse.json({ 
       success: true,
