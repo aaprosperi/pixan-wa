@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 export async function GET() {
   try {
-    // Obtener estadísticas del KV store
-    const totalMessages = await kv.get('stats:total_messages') || 0;
-    const activeUsers = await kv.get('stats:active_users') || 0;
+    const redis = Redis.fromEnv();
+    
+    // Obtener estadísticas del Redis
+    const totalMessages = await redis.get('stats:total_messages') || 0;
+    const activeUsers = await redis.get('stats:active_users') || 0;
     
     return NextResponse.json({
-      totalMessages,
-      activeUsers,
+      totalMessages: Number(totalMessages),
+      activeUsers: Number(activeUsers),
       modelsUsed: 11, // Los 11 modelos que tienes configurados
     });
   } catch (error) {
