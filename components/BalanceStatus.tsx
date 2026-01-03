@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { DollarSign, Loader2, CheckCircle, AlertCircle, Database } from 'lucide-react';
 
 interface BalanceData {
   aiGateway: {
@@ -18,6 +18,12 @@ interface BalanceData {
     status: 'ok' | 'warning' | 'error';
     quotaUsed: number;
     quotaLimit: number;
+  };
+  upstash: {
+    status: 'ok' | 'warning' | 'error';
+    commandsUsed: number;
+    dailyLimit: number;
+    percentUsed: number;
   };
 }
 
@@ -95,6 +101,23 @@ export default function BalanceStatus() {
               <p className="text-xs text-gray-500">Gemini</p>
               <p className="text-sm font-semibold text-gray-900">
                 {balances.gemini.quotaUsed}/{balances.gemini.quotaLimit}
+              </p>
+            </div>
+          </div>
+
+          {/* Upstash */}
+          <div className="flex items-center space-x-2 pl-4">
+            <StatusIcon status={balances.upstash.status} />
+            <div>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <Database className="w-3 h-3" />
+                Upstash
+              </p>
+              <p className="text-sm font-semibold text-gray-900">
+                {balances.upstash.commandsUsed.toLocaleString()}/{balances.upstash.dailyLimit.toLocaleString()}
+              </p>
+              <p className="text-xs text-gray-400">
+                {balances.upstash.percentUsed}% usado
               </p>
             </div>
           </div>
