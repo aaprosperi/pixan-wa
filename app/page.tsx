@@ -1,0 +1,101 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Activity, DollarSign, MessageSquare, Settings } from 'lucide-react';
+import BalanceStatus from '@/components/BalanceStatus';
+import LogsViewer from '@/components/LogsViewer';
+import SystemPromptEditor from '@/components/SystemPromptEditor';
+
+export default function Dashboard() {
+  const [stats, setStats] = useState({
+    totalMessages: 0,
+    activeUsers: 0,
+    modelsUsed: 0,
+  });
+
+  useEffect(() => {
+    // Cargar estadísticas
+    fetch('/WA/api/stats')
+      .then(res => res.json())
+      .then(data => setStats(data))
+      .catch(err => console.error('Error loading stats:', err));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <MessageSquare className="w-8 h-8 text-pixan-primary" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">pixan WA</h1>
+                <p className="text-sm text-gray-500">Panel de Administración</p>
+              </div>
+            </div>
+            
+            {/* Balance Status - Arriba a la derecha */}
+            <BalanceStatus />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Mensajes Totales</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalMessages}</p>
+              </div>
+              <div className="bg-blue-100 rounded-full p-3">
+                <MessageSquare className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Usuarios Activos</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{stats.activeUsers}</p>
+              </div>
+              <div className="bg-green-100 rounded-full p-3">
+                <Activity className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Modelos Disponibles</p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">{stats.modelsUsed}</p>
+              </div>
+              <div className="bg-purple-100 rounded-full p-3">
+                <Settings className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid - System Prompt y Logs */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* System Prompt Editor */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <SystemPromptEditor />
+          </div>
+
+          {/* Logs Viewer */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <LogsViewer />
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
