@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
 export async function GET(request: NextRequest) {
   try {
+    const redis = Redis.fromEnv();
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
 
-    // Obtener logs del KV store
-    const logs = await kv.lrange('logs', 0, limit - 1);
+    // Obtener logs del Redis
+    const logs = await redis.lrange('logs', 0, limit - 1);
 
     return NextResponse.json({
       logs: logs || [],
@@ -24,7 +25,8 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE() {
   try {
-    await kv.del('logs');
+    const redis = Redis.fromEnv();
+    await redis.del('logs');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting logs:', error);
