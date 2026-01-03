@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Activity, DollarSign, MessageSquare, Settings } from 'lucide-react';
+import Image from 'next/image';
 import BalanceStatus from '@/components/BalanceStatus';
 import LogsViewer from '@/components/LogsViewer';
 import SystemPromptEditor from '@/components/SystemPromptEditor';
@@ -27,11 +28,26 @@ export default function Dashboard() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <MessageSquare className="w-8 h-8 text-pixan-primary" />
+            <div className="flex items-center space-x-4">
+              {/* Logo pixan */}
+              <div className="relative w-12 h-12">
+                <Image
+                  src="/WA/pixan-logo.svg"
+                  alt="pixan logo"
+                  width={48}
+                  height={48}
+                  className="rounded-lg"
+                />
+              </div>
+              
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">pixan WA</h1>
-                <p className="text-sm text-gray-500">Panel de Administración</p>
+                <div className="flex items-center space-x-2 mt-0.5">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                    WhatsApp
+                  </span>
+                  <p className="text-sm text-gray-500">Panel de Administración</p>
+                </div>
               </div>
             </div>
             
